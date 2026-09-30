@@ -1,18 +1,27 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { Stack } from 'expo-router';
+import { AuthProvider, useAuth } from '@/context/auth-context';
+import { Cores } from '@/constants/cores';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+function Rotas() {
+  const { carregando } = useAuth();
 
-SplashScreen.preventAutoHideAsync();
+  // espera ler a sessao salva antes de decidir qual tela mostrar
+  if (carregando) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Cores.fundo }}>
+        <ActivityIndicator size="large" color={Cores.destaque} />
+      </View>
+    );
+  }
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Cores.fundo } }} />;
+}
+
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <AuthProvider>
+      <Rotas />
+    </AuthProvider>
   );
 }
